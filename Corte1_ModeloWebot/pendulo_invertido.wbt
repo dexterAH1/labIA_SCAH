@@ -1,0 +1,131 @@
+#VRML_SIM R2025a utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/floors/protos/Floor.proto"
+
+WorldInfo {
+  info [
+    "Inverted pendulum on a track"
+  ]
+  title "Inverted Pendulum"
+  basicTimeStep 16
+}
+Viewpoint {
+  orientation 0.18469525135125106 -0.1545101680896531 -0.9705741971045827 4.240289368887398
+  position 1.4548292906803681 -5.047955068824265 1.6573207713886096
+}
+TexturedBackground {
+  skyTexture "sky_box_sunset.jpg"
+  groundTexture "natural_pine_bark.jpg"
+}
+TexturedBackgroundLight {
+}
+Floor {
+  size 10 10
+  diffuseColor 0.8 0.7 0.6
+  texture "wood_plank_texture.jpg"
+  tileRepeat 4 4
+}
+DEF TRACK Solid {
+  translation 0 0 0.01
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 1 0.4 0
+        roughness 0.2
+        metalness 0
+      }
+      geometry Box {
+        size 2 0.1 0.02
+      }
+    }
+  ]
+  name "track"
+  boundingObject Box {
+    size 2 0.1 0.02
+  }
+}
+Robot {
+  children [
+    SliderJoint {
+      jointParameters JointParameters {
+        axis 1 0 0
+        minStop -0.8
+        maxStop 0.8
+      }
+      device [
+        LinearMotor {
+          name "cart motor"
+          maxForce 20
+        }
+        PositionSensor {
+          name "cart position sensor"
+        }
+      ]
+      endPoint DEF CART Solid {
+        translation 0 0 0.05
+        children [
+          Shape {
+            appearance PBRAppearance {
+              baseColor 1 0 1
+              roughness 0.5
+              metalness 0
+            }
+            geometry Box {
+              size 0.2 0.1 0.05
+            }
+          }
+          HingeJoint {
+            jointParameters HingeJointParameters {
+              axis 0 1 0
+              anchor 0 0 0.025
+            }
+            device [
+              PositionSensor {
+                name "pole position sensor"
+              }
+            ]
+            endPoint Solid {
+              translation 0 0 0.25
+              children [
+                DEF POLE Shape {
+                  appearance PBRAppearance {
+                    baseColor 0 1 0
+                    roughness 0.5
+                    metalness 0
+                  }
+                  geometry Cylinder {
+                    height 0.5
+                    radius 0.01
+                  }
+                }
+              ]
+              name "pole"
+              boundingObject Cylinder {
+                height 0.5
+                radius 0.01
+              }
+              physics Physics {
+                density -1
+                mass 0.1
+              }
+              linearVelocity 0 0 -1.403321903126198e-15
+            }
+          }
+        ]
+        name "cart"
+        boundingObject Box {
+          size 0.2 0.1 0.05
+        }
+        physics Physics {
+          density -1
+          mass 1
+        }
+        linearVelocity 0 0 -1.9894005895102989e-16
+      }
+    }
+  ]
+  name "inverted_pendulum"
+  controller "inverted_pendulum_controller"
+}
